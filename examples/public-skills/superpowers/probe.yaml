@@ -20,23 +20,30 @@ cases: cases.yaml
 
 routing_only: true
 repeats: 3
-concurrency: 8
-max_cost_usd: 2.5
+concurrency: 4
+max_cost_usd: 0.5
 
-# One OpenRouter key covers every model below (OPENROUTER_API_KEY). Same five models as examples/commit-message.
+# One OpenRouter key covers every model below (OPENROUTER_API_KEY). Same models as examples/commit-message.
+# max_tokens keeps OpenRouter's per-request credit reservation small; a reply cut off before any
+# load_skill call is reported as an error, never as "no skill loaded".
 models:
   - name: gpt-5.6-luna
     model: openai/gpt-5.6-luna
+    params: { max_tokens: 4096 }
     extra_body: { reasoning: { effort: low } }
 
   - name: qwen3.8-flash
     model: qwen/qwen3.8-flash
+    params: { max_tokens: 4096 }
 
   - name: deepseek-v4.1-flash
     model: deepseek/deepseek-v4.1-flash
+    params: { max_tokens: 4096 }
 
   - name: glm-5.3-flash
     model: z-ai/glm-5.3-flash
+    params: { max_tokens: 4096 }
 
   - name: kimi-k3
     model: moonshotai/kimi-k3
+    params: { max_tokens: 4096 }
