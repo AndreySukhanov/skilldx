@@ -156,3 +156,10 @@ def test_routing_only_records_first_turn_loads_and_stops():
 def test_routing_only_text_answer_means_nothing_loaded():
     result = ApiRunner(FakeClient.script(text("just an answer")), "m", routing_only=True).run("hi", [SKILL])
     assert result.loaded_skills == [] and result.output == "just an answer"
+
+
+def test_routing_only_truncated_answer_is_an_error_not_a_decision():
+    cut = text("Let me think about which skill")
+    cut["choices"][0]["finish_reason"] = "length"
+    result = ApiRunner(FakeClient.script(cut), "m", routing_only=True).run("hi", [SKILL])
+    assert result.error and "truncated" in result.error

@@ -126,8 +126,13 @@ class ApiRunner:
                 result.cached = result.cached and cached
                 result.usage.add(self._usage(response))
 
-                message = response["choices"][0]["message"]
+                choice = response["choices"][0]
+                message = choice["message"]
                 tool_calls = message.get("tool_calls") or []
+                if self.routing_only and not tool_calls and choice.get("finish_reason") == "length":
+                    # cut off by max_tokens before any tool call: the routing decision is unknown, not "none"
+                    result.error = "truncated by max_tokens before a routing decision"
+                    return result
                 if not tool_calls or self.routing_only:
                     for tc in tool_calls:  # routing: record what the first turn loads, send nothing back
                         self._handle_tool(tc, by_name, result)
