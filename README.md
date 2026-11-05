@@ -40,6 +40,46 @@ What the numbers say:
 
 Ten cases is a small probe; the point is the method. Treat the ranking as specific to this skill.
 
+## Routing across 28 public skills
+
+A real agent never sees one skill. It sees a list - and every description in that list competes for every request. So we took the skills people actually install and asked the question nobody measures: **when 14 skills are on the table, does the model pick the right one?**
+
+Two probes, real skills, unchanged descriptions:
+
+- [`examples/public-skills/anthropic`](examples/public-skills/anthropic) - 14 skills from [anthropics/skills](https://github.com/anthropics/skills), 25 labeled cases;
+- [`examples/public-skills/superpowers`](examples/public-skills/superpowers) - 14 skills from [obra/superpowers](https://github.com/obra/superpowers), 21 labeled cases.
+
+Each case says which skill must load and which must not ([how the golden sets are labeled](examples/public-skills/LABELS.md)). `routing_only` stops every trial after the first turn, 3 repeats per case, all models through OpenRouter.
+
+| probe | gpt-5.6-luna | qwen3.8-flash | deepseek-v4.1-flash | glm-5.3-flash | kimi-k3 |
+|---|---|---|---|---|---|
+| anthropic, 75 trials per model | 72/75 · $0.011 | 74/75 · $0.018 | **75/75** · $0.026 | **75/75** · $0.017 | 74/75 · $2.28 |
+| superpowers, 63 trials per model | 59/63 · $0.014 | **61/63** · $0.012 | 60/63 · $0.014 | 59/63 · $0.008 | not run* |
+
+<sub>*kimi-k3 costs about 100x the others per routing trial, so it was run on the first probe only. Full reports: [anthropic](examples/public-skills/anthropic/results/report.md), [superpowers](examples/public-skills/superpowers/results/report.md).</sub>
+
+The headline number is high - and that is exactly why the misses are worth reading. They are not random. Every one of them traces back to how a description is written:
+
+| skill | what happened | models |
+|---|---|---|
+| superpowers `test-driven-development` | "Add a function that validates IBANs" loaded `brainstorming` in **12 of 12** trials; TDD - its own description says "implementing any feature" - loaded in 2 of 12, and only next to brainstorming | all four |
+| superpowers `brainstorming` | "You MUST use this before any creative work" - loaded next to the expected skill in **22 of 48** trials where it was a plausible extra, e.g. on top of `writing-skills` | all four |
+| anthropic `academy-guide` | "Build an MCP server for our Jira" pulled in the learning-resources skill **3 of 3** times: its description says "stop and check this skill before finishing any reply to a question about ... MCP" | gpt-5.6-luna |
+| anthropic `claude-api` | loaded for a question about the **openai** package, although the description has an explicit "SKIP when OpenAI/GPT named" clause | qwen3.8-flash, 1 of 3 |
+| anthropic `mcp-builder` | loaded for "In two sentences: what is the Model Context Protocol?" - an explanation, not a build | kimi-k3, 1 of 3 |
+| anthropic `discernment-nudge` | written to run *after* an answer, yet loaded on the first turn in 4-9 of 54 trials per model | all five |
+| superpowers `verification-before-completion` | "Done fixing the date parser. Commit it and open the PR" went to `finishing-a-development-branch` instead | glm-5.3-flash, 1 of 3 |
+
+And the clean side of the ledger: all 13 Anthropic skills that had a positive case loaded every time they should, on all five models; 10 of them never loaded when they shouldn't. `systematic-debugging` went 9 for 9 on every model.
+
+What it says:
+
+- **Routing between well-separated skills is close to solved** - flash models get it right for one to three cents per 75 trials.
+- **The failures are written, not sampled.** Descriptions that shout - "You MUST", "Stop and check this skill before finishing any reply", "any" - win requests that belong to a quieter neighbor. A description is a routing rule; write it like one.
+- **First-turn routing is the cheap test you can run in CI**: label your requests once, run `--fail-under`, and a new skill that steals traffic from an old one fails the build.
+
+Limits, plainly: one labeler, 46 cases, first turn only - a model that loads a second skill after reading the first one's body is not measured here. Disagree with a label? Change it in `cases.yaml` and rerun with `--cache-only`: the report rebuilds from cached responses for free.
+
 ## Quick start
 
 ```bash
@@ -147,6 +187,7 @@ The example run uses OpenRouter only; the direct vendor presets follow each vend
 ## Roadmap
 
 - [x] Skill loading via tool call, deterministic checks, trigger precision/recall, repeats with intervals, flaky detection, cost and latency, response cache, budget cap
+- [x] Routing between many skills: `loads` / `not_loads` labels, `routing_only` first-turn mode, per-skill routing table and collisions, golden sets on public skills
 - [ ] LLM-as-judge with rubrics, and pairwise comparison of two skill versions
 - [ ] Judge calibration against human labels - a judge that disagrees with people is flagged, not trusted
 - [ ] Judge panels from different model families, with disagreements reported instead of averaged

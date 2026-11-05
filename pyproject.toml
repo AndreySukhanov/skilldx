@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skillprobe"
-version = "0.1.0"
+version = "0.2.0"
 description = "Eval harness for agent skills (SKILL.md): does the skill trigger when it should, and does the agent follow it - across OpenAI, Qwen, DeepSeek, GLM, Kimi and any OpenAI-compatible model."
 readme = "README.md"
 license = "MIT"
