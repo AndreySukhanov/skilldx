@@ -1,0 +1,42 @@
+# Routing probe: 14 skills from anthropics/skills, all offered at once, as an agent sees them.
+# Only the frontmatter is vendored (see ../SOURCES.md); routing_only never sends skill bodies.
+
+skills:
+  - skills/academy-guide
+  - skills/algorithmic-art
+  - skills/brand-guidelines
+  - skills/canvas-design
+  - skills/claude-api
+  - skills/discernment-nudge
+  - skills/frontend-design
+  - skills/internal-comms
+  - skills/mcp-builder
+  - skills/skill-creator
+  - skills/slack-gif-creator
+  - skills/theme-factory
+  - skills/web-artifacts-builder
+  - skills/webapp-testing
+cases: cases.yaml
+
+routing_only: true
+repeats: 3
+concurrency: 8
+max_cost_usd: 2.5
+
+# One OpenRouter key covers every model below (OPENROUTER_API_KEY). Same five models as examples/commit-message.
+models:
+  - name: gpt-5.6-luna
+    model: openai/gpt-5.6-luna
+    extra_body: { reasoning: { effort: low } }
+
+  - name: qwen3.8-flash
+    model: qwen/qwen3.8-flash
+
+  - name: deepseek-v4.1-flash
+    model: deepseek/deepseek-v4.1-flash
+
+  - name: glm-5.3-flash
+    model: z-ai/glm-5.3-flash
+
+  - name: kimi-k3
+    model: moonshotai/kimi-k3

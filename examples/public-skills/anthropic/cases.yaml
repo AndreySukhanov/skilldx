@@ -1,0 +1,182 @@
+# Golden set for routing over 14 skills from anthropics/skills.
+# Labels follow ../LABELS.md: `loads` = the skill whose own description names this request;
+# `not_loads` = skills whose description excludes it or that clearly belong elsewhere.
+# Skills a case does not mention are plausible co-loads and are not scored.
+
+- id: art-flow-field
+  tags: [positive]
+  prompt: Make a generative art piece in p5.js - particles following a Perlin-noise flow field, with a seed I can change.
+  expect:
+    loads: [algorithmic-art]
+    not_loads: [canvas-design, frontend-design, web-artifacts-builder, slack-gif-creator, academy-guide, discernment-nudge]
+
+- id: poster-print
+  tags: [positive]
+  prompt: Design a poster for our jazz night on March 14 - one PNG I can print at A3.
+  expect:
+    loads: [canvas-design]
+    not_loads: [algorithmic-art, frontend-design, slack-gif-creator, web-artifacts-builder, academy-guide]
+
+- id: wall-print
+  tags: [positive]
+  prompt: Make me a minimalist abstract print for my living room - geometric shapes, muted colors, a single image.
+  expect:
+    loads: [canvas-design]
+    not_loads: [frontend-design, web-artifacts-builder, slack-gif-creator, academy-guide]
+
+- id: slack-gif
+  tags: [positive]
+  prompt: Make me a GIF of a cat typing furiously for our team Slack channel.
+  expect:
+    loads: [slack-gif-creator]
+    not_loads: [algorithmic-art, canvas-design, internal-comms, academy-guide]
+
+- id: frames-to-mp4
+  tags: [near-miss]
+  prompt: Give me the ffmpeg command to turn a folder of PNG frames into an MP4 at 24 fps.
+  expect:
+    not_loads: "*"
+
+- id: landing-aesthetic
+  tags: [positive]
+  prompt: >-
+    I'm building a landing page for a coffee subscription startup. Help me choose an aesthetic direction
+    and typography that doesn't look like every other template.
+  expect:
+    loads: [frontend-design]
+    not_loads: [canvas-design, algorithmic-art, webapp-testing, slack-gif-creator]
+
+- id: react-artifact
+  tags: [positive]
+  prompt: Build me a claude.ai artifact - a multi-page project tracker in React with routing, shadcn/ui tables and filters.
+  expect:
+    loads: [web-artifacts-builder]
+    not_loads: [webapp-testing, mcp-builder, canvas-design, academy-guide]
+
+- id: single-html-toggle
+  tags: [near-miss]
+  prompt: Write a single HTML file with a button that toggles dark mode.
+  expect:
+    not_loads: [web-artifacts-builder, webapp-testing, mcp-builder, canvas-design, academy-guide]
+
+- id: playwright-login
+  tags: [positive]
+  prompt: >-
+    My Flask app runs on localhost:5000. Check that the login form shows an error on a wrong password
+    and take a screenshot.
+  expect:
+    loads: [webapp-testing]
+    not_loads: [web-artifacts-builder, frontend-design, mcp-builder, canvas-design]
+
+- id: pytest-unit
+  tags: [near-miss]
+  prompt: "Write pytest unit tests for this function: def slugify(s): return s.lower().replace(' ', '-')"
+  expect:
+    not_loads: "*"
+
+- id: mcp-jira
+  tags: [positive]
+  prompt: >-
+    Help me build an MCP server in TypeScript that wraps our Jira REST API so Claude can search and
+    create tickets.
+  expect:
+    loads: [mcp-builder]
+    not_loads: [skill-creator, webapp-testing, web-artifacts-builder, academy-guide]
+
+- id: mcp-explain
+  tags: [near-miss]
+  prompt: "In two sentences: what is the Model Context Protocol?"
+  expect:
+    not_loads: [mcp-builder, skill-creator, webapp-testing]
+
+- id: skill-description-fix
+  tags: [positive]
+  prompt: >-
+    My SKILL.md never triggers. The description is just "Helps with PDFs." Rewrite it so it triggers
+    reliably, and tell me how to test that.
+  expect:
+    loads: [skill-creator]
+    not_loads: [mcp-builder, internal-comms, canvas-design]
+
+- id: skill-evals
+  tags: [positive]
+  prompt: >-
+    I have a skill that writes changelogs. Set up evals to check whether it actually improves the output,
+    with variance across runs.
+  expect:
+    loads: [skill-creator]
+    not_loads: [mcp-builder, webapp-testing]
+
+- id: leadership-update
+  tags: [positive]
+  prompt: "Write this week's status update for leadership: SSO shipped, the billing migration slipped a week, two engineers hired."
+  expect:
+    loads: [internal-comms]
+    not_loads: [brand-guidelines, canvas-design, theme-factory, academy-guide]
+
+- id: incident-report
+  tags: [positive]
+  prompt: Draft an incident report for yesterday's 40-minute checkout outage caused by an expired TLS certificate.
+  expect:
+    loads: [internal-comms]
+    not_loads: [webapp-testing, canvas-design, academy-guide]
+
+- id: cold-email
+  tags: [near-miss]
+  prompt: Write a cold email to a potential customer introducing our analytics product.
+  expect:
+    not_loads: [internal-comms, brand-guidelines, canvas-design, academy-guide]
+
+- id: anthropic-brand
+  tags: [positive]
+  prompt: Restyle this slide outline with Anthropic's official brand colors and fonts.
+  expect:
+    loads: [brand-guidelines]
+    not_loads: [canvas-design, algorithmic-art, internal-comms]
+
+- id: preset-theme
+  tags: [positive]
+  prompt: Apply one of your preset themes to my quarterly report slides - something calm and blue.
+  expect:
+    loads: [theme-factory]
+    not_loads: [brand-guidelines, canvas-design, algorithmic-art]
+
+- id: claude-pricing
+  tags: [positive]
+  prompt: >-
+    What's the cheapest Claude model for classifying a million support tickets, and how do I turn on
+    prompt caching in the Python SDK?
+  expect:
+    loads: [claude-api]
+    not_loads: [mcp-builder, skill-creator]
+
+- id: openai-streaming
+  tags: [near-miss]
+  prompt: In my Python script that uses the openai package, how do I stream GPT-4o responses token by token?
+  expect:
+    not_loads: [claude-api, mcp-builder, skill-creator, academy-guide, discernment-nudge]
+
+- id: academy-start
+  tags: [positive]
+  prompt: I'm new to Claude. How do I get started with Projects - are there any tutorials?
+  expect:
+    loads: [academy-guide]
+    not_loads: [skill-creator, mcp-builder, web-artifacts-builder]
+
+- id: capital-city
+  tags: [none]
+  prompt: What's the capital of Australia?
+  expect:
+    not_loads: "*"
+
+- id: translate-greeting
+  tags: [none]
+  prompt: Translate "good morning, team" into Spanish.
+  expect:
+    not_loads: "*"
+
+- id: rename-jpeg
+  tags: [none]
+  prompt: Give me a bash one-liner that renames every .jpeg file in this folder to .jpg.
+  expect:
+    not_loads: "*"

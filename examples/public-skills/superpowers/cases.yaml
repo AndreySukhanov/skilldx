@@ -1,0 +1,155 @@
+# Golden set for routing over 14 skills from obra/superpowers (using-superpowers excluded - the plugin
+# injects it at session start, it is never routed). Labels follow ../LABELS.md.
+# Superpowers skills are meant to stack, so most cases forbid only the skills that clearly do not apply;
+# plausible co-loads stay unlabeled and are not scored.
+
+- id: failing-test
+  tags: [positive]
+  prompt: "test_invoice_total started failing after yesterday's merge: expected 120.00, got 119.99. Fix it."
+  expect:
+    loads: [systematic-debugging]
+    not_loads: [brainstorming, writing-plans, executing-plans, finishing-a-development-branch, writing-skills, using-git-worktrees]
+
+- id: flaky-ci
+  tags: [positive]
+  prompt: Our CI fails on the payment tests about once in five runs and nobody knows why. Figure it out.
+  expect:
+    loads: [systematic-debugging]
+    not_loads: [brainstorming, writing-plans, finishing-a-development-branch, writing-skills]
+
+- id: safari-export
+  tags: [positive]
+  prompt: Users report that the export button does nothing in Safari. Find out why.
+  expect:
+    loads: [systematic-debugging]
+    not_loads: [brainstorming, writing-plans, requesting-code-review, writing-skills]
+
+- id: referral-program
+  tags: [positive]
+  prompt: I want to add a referral program to our app. Let's think through how it should work.
+  expect:
+    loads: [brainstorming]
+    not_loads: [executing-plans, subagent-driven-development, systematic-debugging, finishing-a-development-branch, verification-before-completion, receiving-code-review]
+
+- id: conference-talk
+  tags: [positive]
+  prompt: Help me plan a 20-minute conference talk about our migration to Postgres.
+  expect:
+    loads: [brainstorming]
+    not_loads: [writing-plans, executing-plans, test-driven-development, systematic-debugging, using-git-worktrees]
+
+- id: spec-to-plan
+  tags: [positive]
+  prompt: >-
+    Here's the approved spec for CSV export: columns, filters, a 50k row limit. Write the implementation
+    plan before anyone touches code.
+  expect:
+    loads: [writing-plans]
+    not_loads: [executing-plans, subagent-driven-development, systematic-debugging, finishing-a-development-branch]
+
+- id: execute-inline
+  tags: [positive]
+  prompt: The plan in docs/plan.md is approved. Implement it yourself, right here, step by step - no subagents.
+  expect:
+    loads: [executing-plans]
+    not_loads: [subagent-driven-development, dispatching-parallel-agents, writing-plans, brainstorming]
+
+- id: execute-with-subagents
+  tags: [positive]
+  prompt: The plan is approved and its six tasks are independent. Execute it in this session with a fresh subagent per task.
+  expect:
+    loads: [subagent-driven-development]
+    not_loads: [executing-plans, writing-plans, brainstorming]
+
+- id: parallel-failures
+  tags: [positive]
+  prompt: >-
+    Three unrelated test files fail - auth, billing and search, each for a different reason.
+    Investigate them in parallel.
+  expect:
+    loads: [dispatching-parallel-agents]
+    not_loads: [writing-plans, brainstorming, executing-plans, finishing-a-development-branch]
+
+- id: receive-review
+  tags: [positive]
+  prompt: >-
+    The reviewer says I should replace our retry loop with a library and that my lock is unnecessary.
+    I'm not convinced. Here are the comments - let's go through them.
+  expect:
+    loads: [receiving-code-review]
+    not_loads: [requesting-code-review, brainstorming, writing-plans]
+
+- id: request-review
+  tags: [positive]
+  prompt: I've finished the rate limiter. Before I merge, have it reviewed against the requirements.
+  expect:
+    loads: [requesting-code-review]
+    not_loads: [receiving-code-review, brainstorming, systematic-debugging]
+
+- id: claim-done
+  tags: [positive]
+  prompt: Done fixing the date parser. Commit it and open the PR.
+  expect:
+    loads: [verification-before-completion]
+    not_loads: [brainstorming, writing-plans, systematic-debugging, receiving-code-review]
+
+- id: finish-branch
+  tags: [positive]
+  prompt: All tasks on feature/export are done and tests pass. Should I merge to main, open a PR, or something else?
+  expect:
+    loads: [finishing-a-development-branch]
+    not_loads: [brainstorming, systematic-debugging, writing-plans, receiving-code-review]
+
+- id: isolated-workspace
+  tags: [positive]
+  prompt: I need to start the export feature without disturbing my uncommitted work on main. Set up an isolated workspace.
+  expect:
+    loads: [using-git-worktrees]
+    not_loads: [finishing-a-development-branch, systematic-debugging, receiving-code-review]
+
+- id: iban-validator
+  tags: [positive]
+  prompt: Add a function that validates IBANs to utils/banking.py.
+  expect:
+    loads: [test-driven-development]
+    not_loads: [systematic-debugging, finishing-a-development-branch, receiving-code-review, writing-skills]
+
+- id: new-skill
+  tags: [positive]
+  prompt: Write a new skill that teaches the agent our SQL migration conventions.
+  expect:
+    loads: [writing-skills]
+    not_loads: [writing-plans, systematic-debugging, executing-plans]
+
+- id: diagnose-session
+  tags: [positive]
+  prompt: >-
+    That last agent session went badly: it ignored the plan and redid the same work twice. Why did that
+    happen? I want to file a bug report with the superpowers maintainers.
+  expect:
+    loads: [diagnosing-superpowers]
+    not_loads: [writing-plans, executing-plans, requesting-code-review, brainstorming]
+
+- id: http-418
+  tags: [none]
+  prompt: What does HTTP status 418 mean?
+  expect:
+    not_loads: "*"
+
+- id: mutex-vs-semaphore
+  tags: [none]
+  prompt: Explain the difference between a mutex and a semaphore.
+  expect:
+    not_loads: "*"
+
+- id: rebase-pushed-branch
+  tags: [none]
+  prompt: Is it safe to rebase a branch I've already pushed?
+  expect:
+    not_loads: "*"
+
+- id: rename-variable
+  tags: [near-miss]
+  prompt: "Rename the variable usr to user in this function: def greet(usr): return f'Hi {usr}'"
+  expect:
+    not_loads: "*"
