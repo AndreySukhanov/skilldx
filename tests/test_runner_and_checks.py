@@ -107,3 +107,34 @@ def test_trigger_check_fails_on_unwanted_load_and_is_skipped_for_baseline():
 def test_invalid_json_fails_check():
     [check] = run_checks(Expect(json_schema={"type": "object"}), RunResult(output="not json"), None)
     assert not check.passed and "not JSON" in check.detail
+
+
+def test_loads_and_not_loads_score_any_skill_not_only_the_target():
+    offered = ["commit-message", "code-review", "changelog"]
+    right = RunResult(output="x", loaded_skills=["code-review"])
+    expect = Expect(loads=["code-review"], not_loads=["commit-message"])
+    assert all(c.passed for c in run_checks(expect, right, "commit-message", offered))
+
+    wrong = RunResult(output="x", loaded_skills=["commit-message"])
+    by_name = {c.name: c for c in run_checks(expect, wrong, "commit-message", offered)}
+    assert not by_name["loads 'code-review'"].passed
+    assert not by_name["not_loads"].passed and "commit-message" in by_name["not_loads"].detail
+
+
+def test_not_loads_star_forbids_every_skill_outside_loads():
+    offered = ["commit-message", "code-review", "changelog"]
+    expect = Expect(loads=["code-review"], not_loads="*")
+    assert expect.forbidden(offered) == {"commit-message", "changelog"}
+    extra = RunResult(output="x", loaded_skills=["code-review", "changelog"])
+    assert [c.passed for c in run_checks(expect, extra, None, offered)] == [True, False]
+    # nothing offered (baseline): routing checks are skipped
+    assert run_checks(expect, extra, None, []) == []
+
+
+def test_routing_expectations_are_validated():
+    import pytest
+
+    with pytest.raises(ValueError, match="only allowed in not_loads"):
+        Expect(loads=["*"])
+    with pytest.raises(ValueError, match="both required and forbidden"):
+        Expect(loads=["a"], not_loads=["a"])

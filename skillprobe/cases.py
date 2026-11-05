@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class Expect(BaseModel):
@@ -15,16 +15,46 @@ class Expect(BaseModel):
     triggered: bool | None = Field(
         default=None, description="Whether the target skill must be loaded. None = not checked."
     )
+    loads: list[str] = Field(default_factory=list, description="Skills that must be loaded, whatever the target.")
+    not_loads: list[str] = Field(
+        default_factory=list,
+        description="Skills that must not be loaded. '*' means every offered skill not listed in `loads`.",
+    )
     contains: list[str] = Field(default_factory=list, description="Case-insensitive substrings.")
     not_contains: list[str] = Field(default_factory=list)
     regex: list[str] = Field(default_factory=list, description="Python regexes, each must match (re.search, MULTILINE).")
     json_schema: dict[str, Any] | None = None
     max_chars: int | None = None
 
-    @field_validator("regex", mode="before")
+    @field_validator("regex", "loads", "not_loads", mode="before")
     @classmethod
-    def _regex_as_list(cls, v: Any) -> Any:
+    def _str_as_list(cls, v: Any) -> Any:
         return [v] if isinstance(v, str) else v
+
+    @model_validator(mode="after")
+    def _check_routing(self) -> "Expect":
+        if "*" in self.loads:
+            raise ValueError("'*' is only allowed in not_loads")
+        both = set(self.loads) & set(self.not_loads)
+        if both:
+            raise ValueError(f"skills both required and forbidden: {sorted(both)}")
+        return self
+
+    def forbidden(self, offered: list[str]) -> set[str]:
+        """Skills that must not be loaded, given the names of the skills offered to the model."""
+        if "*" in self.not_loads:
+            return set(offered) - set(self.loads)
+        return set(self.not_loads)
+
+    @property
+    def has_content_checks(self) -> bool:
+        return bool(
+            self.contains or self.not_contains or self.regex or self.json_schema is not None or self.max_chars
+        )
+
+    @property
+    def has_routing_checks(self) -> bool:
+        return bool(self.loads or self.not_loads)
 
 
 class Case(BaseModel):

@@ -172,6 +172,9 @@ def run_probe(
     for c in cases:
         if c.skill and c.skill not in skill_names:
             raise ProbeError(f"case '{c.id}': skill '{c.skill}' is not loaded")
+        unknown = (set(c.expect.loads) | set(c.expect.not_loads)) - skill_names - {"*"}
+        if unknown:
+            raise ProbeError(f"case '{c.id}': loads/not_loads name skills that are not offered: {sorted(unknown)}")
 
     specs = cfg.models
     if models:
@@ -245,7 +248,8 @@ def run_probe(
             trial.result.error = "skipped: not in cache"
             return trial
         if trial.result.error is None:
-            trial.checks = run_checks(case.expect, trial.result, case_target)
+            offered = [s.name for s in variant.skills]
+            trial.checks = run_checks(case.expect, trial.result, case_target, offered)
         with lock:
             if not trial.result.cached:
                 spent += trial.result.usage.cost_usd or 0.0

@@ -121,6 +121,21 @@ models:
 
 Good probes are mostly near-misses. A skill that loads for "write a haiku" is rare; one that loads for "review this diff" when it is a commit-message skill is common.
 
+`triggered` scores one target skill. When several skills compete for the same request, label the routing instead:
+
+```yaml
+- id: failing-test-is-debugging
+  prompt: test_invoice_total started failing after yesterday's merge - expected 120.00, got 119.99.
+  expect:
+    loads: [systematic-debugging]                  # must be loaded
+    not_loads: [brainstorming, writing-plans]      # must not be loaded; other skills are not scored
+
+- id: plain-question
+  prompt: What does HTTP 418 mean?
+  expect:
+    not_loads: "*"                                 # no skill at all
+```
+
 ## Providers
 
 Built in: `openrouter`, `openai`, `deepseek`, `dashscope` (Qwen), `zai` (GLM), `moonshot` (Kimi), `yandex` (YandexGPT). Each is an OpenAI-compatible base URL plus the name of the environment variable holding the key. Anything else - a local vLLM, a GigaChat proxy, a corporate gateway - is two lines under `providers:`.

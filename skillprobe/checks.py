@@ -21,10 +21,21 @@ class CheckResult:
     detail: str = ""
 
 
-def run_checks(expect: Expect, result: RunResult, target: str | None) -> list[CheckResult]:
-    """`target` is None when the run had no skills (baseline) - the trigger check is skipped then."""
+def run_checks(
+    expect: Expect, result: RunResult, target: str | None, offered: list[str] | None = None
+) -> list[CheckResult]:
+    """`target` is None and `offered` is empty when the run had no skills (baseline):
+    trigger and routing checks are skipped then."""
     out = result.output
     checks: list[CheckResult] = []
+
+    if offered:
+        loaded = result.loaded_skills
+        for name in expect.loads:
+            checks.append(CheckResult(f"loads {name!r}", name in loaded, f"loaded={loaded}"))
+        if expect.not_loads:
+            wrong = [n for n in loaded if n in expect.forbidden(offered)]
+            checks.append(CheckResult("not_loads", not wrong, f"wrongly loaded={wrong}" if wrong else ""))
 
     if expect.triggered is not None and target is not None:
         loaded = target in result.loaded_skills

@@ -140,3 +140,12 @@ def test_wilson_interval_edges():
     assert wilson_interval(0, 0) == (0.0, 0.0)
     lo, hi = wilson_interval(10, 10)
     assert hi == 1.0 and 0.65 < lo < 0.75
+
+
+def test_routing_names_must_be_offered(tmp_path):
+    (tmp_path / "cases.yaml").write_text(
+        "- id: x\n  prompt: hi\n  expect:\n    loads: [no-such-skill]\n", encoding="utf-8"
+    )
+    cfg = make_config(cases=str(tmp_path / "cases.yaml"))
+    with pytest.raises(ProbeError, match="not offered"):
+        run_probe(cfg, client_factory=lambda p: FakeClient(perfect_model))
