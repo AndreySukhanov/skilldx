@@ -18,6 +18,10 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 [![License](https://img.shields.io/badge/license-Source--Available-blue)](LICENSE)
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Andrey%20Sukhanov-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/andrei-sukhanov-2605821b9)
+[![Email](https://img.shields.io/badge/Email-avsukhanov21%40gmail.com-EA4335?logo=gmail&logoColor=white)](mailto:avsukhanov21@gmail.com)
+[![Sponsor](https://img.shields.io/badge/Sponsor-USDT%20TRC--20-26A17B?logo=tether&logoColor=white)](#-sponsor-development)
+
 [Quick Start](#-quick-start) · [Results](#-results-on-the-bundled-example) · [Routing across 28 public skills](#-routing-across-28-public-skills) · [How It Works](#️-how-it-works) · [Features](#-features) · [Roadmap](#-roadmap)
 
 </div>
