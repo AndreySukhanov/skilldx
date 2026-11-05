@@ -38,12 +38,73 @@ def summary_table(run: ProbeRun) -> str:
     return "\n".join(rows)
 
 
+def _ratio_cell(num: int, den: int) -> str:
+    return f"{num}/{den}" if den else "-"
+
+
+def routing_section(run: ProbeRun) -> list[str]:
+    variants = [v for v in run.variants if v.with_skills]
+    if not run.is_routing or not variants:
+        return []
+    per_variant = {v.name: {r.skill: r for r in run.routing(v)} for v in variants}
+    skills = [s.name for s in variants[0].skills]
+    lines = [
+        "## Skill routing",
+        "",
+        "Per skill and model: `loaded when required · loaded when forbidden`, by the case labels "
+        "(`loads` / `not_loads`). Skills a case does not label are not scored.",
+        "",
+        "| skill | " + " | ".join(v.name for v in variants) + " |",
+        "|---|" + "---|" * len(variants),
+    ]
+    for skill in skills:
+        cells = []
+        for v in variants:
+            r = per_variant[v.name][skill]
+            cells.append(
+                f"{_ratio_cell(r.loaded_when_required, r.required)} · "
+                f"{_ratio_cell(r.loaded_when_forbidden, r.forbidden)}"
+            )
+        lines.append(f"| `{skill}` | " + " | ".join(cells) + " |")
+
+    collisions = {v.name: run.collisions(v) for v in variants}
+    keys = sorted(
+        {k for c in collisions.values() for k in c},
+        key=lambda k: (-sum(c.get(k, 0) for c in collisions.values()), k),
+    )
+    lines += ["", "### Collisions", "", "A forbidden skill loaded instead of, or next to, the expected one.", ""]
+    if not keys:
+        lines.append("None.")
+    else:
+        lines += [
+            "| expected | loaded | " + " | ".join(v.name for v in variants) + " |",
+            "|---|---|" + "---|" * len(variants),
+        ]
+        for expected, loaded in keys:
+            cells = [str(collisions[v.name].get((expected, loaded), 0)) for v in variants]
+            lines.append(f"| {expected} | `{loaded}` | " + " | ".join(cells) + " |")
+    return lines + [""]
+
+
+def _expects(case) -> str:
+    e = case.expect
+    if e.triggered is not None:
+        return "yes" if e.triggered else "no"
+    if e.loads:
+        return ", ".join(e.loads)
+    if "*" in e.not_loads:
+        return "no skill"
+    return "-"
+
+
 def render_markdown(run: ProbeRun, *, output_chars: int = 240) -> str:
     total_trials = len(run.trials)
+    offered = len(run.variants[0].skills) if run.variants else 0
+    subject = f"Routing probe over {offered} skills" if run.is_routing else f"Target skill: `{run.target}`"
     lines = [
         "# skillprobe report",
         "",
-        f"Target skill: `{run.target}` - {len(run.cases)} cases, {run.repeats} repeat(s) per case, "
+        f"{subject} - {len(run.cases)} cases, {run.repeats} repeat(s) per case, "
         f"{total_trials} trials. Started {run.started_at}, finished {run.finished_at}.",
         "",
         "## Summary",
@@ -53,9 +114,10 @@ def render_markdown(run: ProbeRun, *, output_chars: int = 240) -> str:
         "Trigger precision: of the runs that loaded the target skill, how many should have. "
         "Trigger recall: of the runs that should load it, how many did. A case is flaky when its repeats disagree.",
         "",
+        *routing_section(run),
         "## Cases",
         "",
-        "| case | expects trigger | " + " | ".join(v.name for v in run.variants) + " |",
+        "| case | expects | " + " | ".join(v.name for v in run.variants) + " |",
         "|---|---|" + "---|" * len(run.variants),
     ]
     for case in run.cases:
@@ -63,8 +125,7 @@ def render_markdown(run: ProbeRun, *, output_chars: int = 240) -> str:
         for variant in run.variants:
             trials = [t for t in run.trials_for(variant.name, case.id) if not t.skipped]
             cells.append(f"{sum(t.passed for t in trials)}/{len(trials)}" if trials else "-")
-        trig = {True: "yes", False: "no", None: "-"}[case.expect.triggered]
-        lines.append(f"| `{case.id}` | {trig} | " + " | ".join(cells) + " |")
+        lines.append(f"| `{case.id}` | {_expects(case)} | " + " | ".join(cells) + " |")
 
     failures = [t for t in run.trials if not t.passed and not t.skipped]
     lines += ["", "## Failures", ""]
@@ -102,6 +163,11 @@ def to_json(run: ProbeRun) -> str:
             for v in run.variants
         ],
         "summary": [asdict(run.summary(v)) for v in run.variants],
+        "routing": (
+            {v.name: [asdict(r) for r in run.routing(v)] for v in run.variants if v.with_skills}
+            if run.is_routing
+            else {}
+        ),
         "trials": [
             {
                 "variant": t.variant,

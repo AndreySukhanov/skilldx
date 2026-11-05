@@ -154,3 +154,32 @@ def test_routing_names_must_be_offered(tmp_path):
 def test_routing_only_rejects_content_checks():
     with pytest.raises(ProbeError, match="routing_only"):
         run_probe(make_config(routing_only=True), client_factory=lambda p: FakeClient(perfect_model))
+
+
+def test_routing_stats_and_collisions(tmp_path):
+    (tmp_path / "cases.yaml").write_text(
+        "- id: commit\n  prompt: write a commit message\n  expect:\n    loads: commit-message\n    not_loads: '*'\n"
+        "- id: review\n  prompt: review this diff\n  expect:\n    loads: code-review\n    not_loads: [commit-message]\n"
+        "- id: chat\n  prompt: hello there\n  expect:\n    not_loads: '*'\n",
+        encoding="utf-8",
+    )
+
+    def confused(kwargs):  # loads commit-message for everything that mentions a diff or a commit
+        user = kwargs["messages"][1]["content"]
+        return load("commit-message") if ("diff" in user or "commit" in user) else text("hi")
+
+    cfg = make_config(cases=str(tmp_path / "cases.yaml"), routing_only=True, repeats=2)
+    run = run_probe(cfg, client_factory=lambda p: FakeClient(confused))
+    routing = {r.skill: r for r in run.routing(run.variants[0])}
+
+    commit, review = routing["commit-message"], routing["code-review"]
+    assert (commit.required, commit.loaded_when_required) == (2, 2)
+    assert (commit.forbidden, commit.loaded_when_forbidden) == (4, 2)  # review + chat cases
+    assert (review.required, review.loaded_when_required, review.forbidden) == (2, 0, 4)
+    assert run.collisions(run.variants[0]) == {("code-review", "commit-message"): 2}
+
+    md = render_markdown(run)
+    assert "Routing probe over 2 skills" in md
+    assert "| `commit-message` | 2/2 · 2/4 |" in md
+    assert "| code-review | `commit-message` | 2 |" in md
+    assert json.loads(to_json(run))["routing"]["fake"][0]["skill"] == "commit-message"

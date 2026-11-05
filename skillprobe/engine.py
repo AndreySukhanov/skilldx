@@ -72,6 +72,27 @@ class VariantSummary:
 
 
 @dataclass
+class SkillRouting:
+    """How one skill was routed across a variant's trials, by the case labels."""
+
+    skill: str
+    required: int = 0
+    loaded_when_required: int = 0
+    forbidden: int = 0
+    loaded_when_forbidden: int = 0
+    neutral: int = 0
+    loaded_when_neutral: int = 0
+
+    @property
+    def recall(self) -> float | None:
+        return ratio(self.loaded_when_required, self.required)
+
+    @property
+    def false_load_rate(self) -> float | None:
+        return ratio(self.loaded_when_forbidden, self.forbidden)
+
+
+@dataclass
 class ProbeRun:
     target: str
     cases: list[Case]
@@ -83,6 +104,50 @@ class ProbeRun:
 
     def trials_for(self, variant: str, case_id: str | None = None) -> list[Trial]:
         return [t for t in self.trials if t.variant == variant and (case_id is None or t.case_id == case_id)]
+
+    @property
+    def is_routing(self) -> bool:
+        return any(c.expect.has_routing_checks for c in self.cases)
+
+    def _routing_trials(self, variant: Variant):
+        by_id = {c.id: c for c in self.cases}
+        for t in self.trials_for(variant.name):
+            case = by_id[t.case_id]
+            if t.skipped or t.result.error or not variant.with_skills or not case.expect.has_routing_checks:
+                continue
+            yield t, case
+
+    def routing(self, variant: Variant) -> list[SkillRouting]:
+        """Per-skill routing: loaded when required (recall), loaded when forbidden, loaded when not labeled."""
+        offered = [s.name for s in variant.skills]
+        stats = {name: SkillRouting(name) for name in offered}
+        for t, case in self._routing_trials(variant):
+            required = set(case.expect.loads)
+            forbidden = case.expect.forbidden(offered)
+            for name, s in stats.items():
+                loaded = name in t.result.loaded_skills
+                if name in required:
+                    s.required += 1
+                    s.loaded_when_required += loaded
+                elif name in forbidden:
+                    s.forbidden += 1
+                    s.loaded_when_forbidden += loaded
+                else:
+                    s.neutral += 1
+                    s.loaded_when_neutral += loaded
+        return list(stats.values())
+
+    def collisions(self, variant: Variant) -> dict[tuple[str, str], int]:
+        """(what the case required, forbidden skill that was loaded) -> number of trials."""
+        offered = [s.name for s in variant.skills]
+        out: dict[tuple[str, str], int] = {}
+        for t, case in self._routing_trials(variant):
+            expected = ", ".join(case.expect.loads) or "no skill"
+            forbidden = case.expect.forbidden(offered)
+            for name in t.result.loaded_skills:
+                if name in forbidden:
+                    out[(expected, name)] = out.get((expected, name), 0) + 1
+        return out
 
     def summary(self, variant: Variant) -> VariantSummary:
         trials = [t for t in self.trials_for(variant.name) if not t.skipped]
