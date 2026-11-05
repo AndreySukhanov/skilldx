@@ -1,0 +1,30 @@
+# skillprobe
+
+> Eval harness for agent skills (SKILL.md): measures whether the right skill loads when many compete, and whether the model follows it once loaded - repeated trials, 95% confidence intervals, routing collisions and a CI gate, on any OpenAI-compatible API.
+
+Key facts:
+
+- Python 3.10+ CLI: `skillprobe run probe.yaml`. A skill is a folder with SKILL.md: YAML frontmatter (`name`, `description`) and a Markdown body.
+- Mirrors how agent harnesses expose skills: the model sees only names and descriptions and loads a body through a `load_skill` tool call; `routing_only: true` stops each trial after the first turn.
+- Deterministic checks, no judge model: `triggered`, `loads`, `not_loads`, `contains`, `not_contains`, `regex`, `json_schema`, `max_chars`.
+- Metrics: trigger precision and recall, pass rate with 95% Wilson intervals, flaky cases, per-skill routing table and collisions table, cost and latency per model.
+- Flags: `--baseline` (no skills offered), `--repeats`, `--models`, `--cases`, `--cache-only` (rebuild reports from cached responses), `--fail-under` (CI gate); `max_cost_usd` budget cap.
+- Providers built in: openrouter, openai, deepseek, dashscope (Qwen), zai (GLM), moonshot (Kimi), yandex (YandexGPT); any other OpenAI-compatible API in two lines.
+- Bundled results: a commit-message skill on five models (OpenAI, Qwen, DeepSeek, GLM, Kimi), and routing golden sets on 28 public skills - 14 from anthropics/skills, 14 from obra/superpowers, 46 labeled cases.
+- Version 0.2.0; 35 offline tests; Source-Available license; third-party skills keep their own licenses.
+
+## Docs
+
+- [README](https://github.com/AndreySukhanov/skillprobe/blob/main/README.md): the problem, results, routing across 28 public skills, quick start, writing a probe, FAQ
+- [Example probe](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/commit-message/probe.yaml): skills, target, models, repeats, budget
+- [Example cases](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/commit-message/cases.yaml): positives and near-misses with checks
+- [Example report](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/commit-message/results/report.md): summary per model, failures with output
+- [Labeling rules](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/public-skills/LABELS.md): how the routing golden sets are labeled
+
+## Optional
+
+- [Routing report, anthropics/skills](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/public-skills/anthropic/results/report.md): 14 skills, 25 cases, five models
+- [Routing report, obra/superpowers](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/public-skills/superpowers/results/report.md): 14 skills, 21 cases, four models
+- [Contributing](https://github.com/AndreySukhanov/skillprobe/blob/main/CONTRIBUTING.md): golden sets, provider presets, checks
+- [Release v0.2.0](https://github.com/AndreySukhanov/skillprobe/releases/tag/v0.2.0): routing across many skills and golden sets on public skills
+- [License](https://github.com/AndreySukhanov/skillprobe/blob/main/LICENSE): Source-Available - free to read, run and learn from

@@ -6,6 +6,8 @@
 
 ### The eval harness that tells you whether the right SKILL.md loads — and whether the model actually follows it.
 
+**skillprobe is an eval harness for agent skills** — the `SKILL.md` folders of Claude Code and the Agent Skills format: a Python CLI that tests whether a skill triggers on the right requests, which skill wins when many compete for the same request, and whether the model follows the skill once it loads. LLM evaluation built for skills: a labeled golden set, repeated trials, 95% confidence intervals and a CI gate, on any model behind an OpenAI-compatible API.
+
 **Not "run it twice and eyeball the output."** skillprobe runs a labeled golden set against any model, many times over, and turns agent-skill behavior into numbers you can put in a pull request: trigger precision and recall, pass rates with 95% confidence intervals, flaky cases, routing collisions between skills, cost per trial.
 
 **Golden set → repeated trials → confidence intervals → per-skill routing table → CI gate. Five model families. Cents per run on flash models.**
@@ -18,7 +20,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 [![License](https://img.shields.io/badge/license-Source--Available-blue)](LICENSE)
 
-[Quick Start](#-quick-start) · [Results](#-results-on-the-bundled-example) · [Routing across 28 public skills](#-routing-across-28-public-skills) · [How It Works](#️-how-it-works) · [Features](#-features) · [Roadmap](#-roadmap)
+[Quick Start](#-quick-start) · [Results](#-results-on-the-bundled-example) · [Routing across 28 public skills](#-routing-across-28-public-skills) · [How It Works](#️-how-it-works) · [Features](#-features) · [FAQ](#-faq) · [Roadmap](#-roadmap)
 
 </div>
 
@@ -280,6 +282,36 @@ Built in: `openrouter`, `openai`, `deepseek`, `dashscope` (Qwen), `zai` (GLM), `
 The example runs use OpenRouter only; the direct vendor presets follow each vendor's documented OpenAI-compatible API.
 
 </details>
+
+---
+
+## ❓ FAQ
+
+### How do I test whether my Claude skill triggers?
+Point `probe.yaml` at your skill folder and its neighbors, write `cases.yaml` with requests that must load the skill and near-misses that must not, and run `skillprobe run probe.yaml`. The report gives trigger precision and recall per model, and every failure with the model's output. See [Writing a Probe](#-writing-a-probe).
+
+### What is a routing collision between skills?
+Two skills loading for the same request, or the wrong one winning it. Label each case with `loads` / `not_loads` and the report adds a per-skill routing table — loaded when required, loaded when forbidden — plus a collisions table. On 28 public skills, "Add a function that validates IBANs" went to `brainstorming` in 12 of 12 trials instead of `test-driven-development`: see [Routing across 28 public skills](#-routing-across-28-public-skills).
+
+### Which models and providers does it support?
+Any model behind an OpenAI-compatible chat API with tool calling — skills load through a `load_skill` tool, the way agent harnesses expose them. Presets are built in for OpenRouter, OpenAI, DeepSeek, Qwen (DashScope), GLM (Z.ai), Kimi (Moonshot) and YandexGPT; a local vLLM or a corporate gateway is two lines of config.
+
+### Do I need an LLM judge?
+No. Checks are deterministic — `triggered`, `loads`, `not_loads`, `contains`, `not_contains`, `regex`, `json_schema`, `max_chars` — so the same output always gets the same verdict. LLM-as-judge with calibration against human labels is on the [roadmap](#-roadmap).
+
+### How much does a run cost?
+Cents on flash models: 30 trials of the bundled example cost $0.007-0.011, and 75 routing trials across 14 skills cost $0.011-0.026. `max_cost_usd` stops a run before it overspends, and every response is cached — rebuilding a report with `--cache-only` costs nothing.
+
+### Why run every case several times?
+Because one run lies. In the bundled example GLM and DeepSeek passed and failed the same prompt on different repeats in 5 and 4 of 10 cases. Repeats are the default, pass rates come with 95% Wilson intervals, and flaky cases are flagged.
+
+### How do I measure what my skill actually adds?
+Run with `--baseline`: the same cases with no skills offered. In the bundled example every model scores 15/30 without the skill and up to 30/30 with it — the gap is the skill's measured effect.
+
+### Can I run it in CI?
+Yes. `--fail-under 0.9` exits 1 when any model's pass rate drops below the threshold, so a new skill that steals traffic from an old one fails the build. A `Dockerfile` is included.
+
+**A skill is a routing rule plus a prompt — skillprobe measures both.**
 
 ---
 
