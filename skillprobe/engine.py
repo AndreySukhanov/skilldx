@@ -172,6 +172,10 @@ def run_probe(
     for c in cases:
         if c.skill and c.skill not in skill_names:
             raise ProbeError(f"case '{c.id}': skill '{c.skill}' is not loaded")
+        if cfg.routing_only and c.expect.has_content_checks:
+            raise ProbeError(
+                f"case '{c.id}': routing_only probes stop before the answer, so content checks cannot run"
+            )
         unknown = (set(c.expect.loads) | set(c.expect.not_loads)) - skill_names - {"*"}
         if unknown:
             raise ProbeError(f"case '{c.id}': loads/not_loads name skills that are not offered: {sorted(unknown)}")
@@ -210,6 +214,7 @@ def run_probe(
             price_out=spec.price_out,
             cache=cache,
             cache_only=cache_only,
+            routing_only=cfg.routing_only,
         )
 
     default_repeats = repeats or cfg.repeats

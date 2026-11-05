@@ -93,6 +93,7 @@ class ApiRunner:
         price_out: float | None = None,
         cache: Cache | None = None,
         cache_only: bool = False,
+        routing_only: bool = False,
     ):
         if cache_only and cache is None:
             raise ValueError("cache_only requires a cache")
@@ -106,6 +107,7 @@ class ApiRunner:
         self.price_out = price_out
         self.cache = cache
         self.cache_only = cache_only
+        self.routing_only = routing_only
 
     def run(self, prompt: str, skills: list[Skill], repeat: int = 0) -> RunResult:
         by_name = {s.name: s for s in skills}
@@ -126,7 +128,9 @@ class ApiRunner:
 
                 message = response["choices"][0]["message"]
                 tool_calls = message.get("tool_calls") or []
-                if not tool_calls:
+                if not tool_calls or self.routing_only:
+                    for tc in tool_calls:  # routing: record what the first turn loads, send nothing back
+                        self._handle_tool(tc, by_name, result)
                     result.output = (message.get("content") or "").strip()
                     return result
 

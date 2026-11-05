@@ -149,3 +149,8 @@ def test_routing_names_must_be_offered(tmp_path):
     cfg = make_config(cases=str(tmp_path / "cases.yaml"))
     with pytest.raises(ProbeError, match="not offered"):
         run_probe(cfg, client_factory=lambda p: FakeClient(perfect_model))
+
+
+def test_routing_only_rejects_content_checks():
+    with pytest.raises(ProbeError, match="routing_only"):
+        run_probe(make_config(routing_only=True), client_factory=lambda p: FakeClient(perfect_model))

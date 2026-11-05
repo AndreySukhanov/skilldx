@@ -55,6 +55,11 @@ class ProbeConfig(BaseModel):
     repeats: int = Field(default=1, ge=1)
     concurrency: int = Field(default=4, ge=1)
     max_turns: int = Field(default=4, ge=1)
+    routing_only: bool = Field(
+        default=False,
+        description="Stop after the first turn and score only which skills were loaded. Skill bodies are never "
+        "sent, so a routing probe over many skills stays cheap.",
+    )
     max_cost_usd: float | None = None
     cache_dir: str | None = ".skillprobe_cache"
 

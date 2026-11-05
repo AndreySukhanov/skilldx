@@ -136,6 +136,8 @@ Good probes are mostly near-misses. A skill that loads for "write a haiku" is ra
     not_loads: "*"                                 # no skill at all
 ```
 
+For a routing probe set `routing_only: true` in `probe.yaml`: each trial stops after the model's first turn, skill bodies are never sent, and only the loads are scored. Thirty skills and a hundred cases cost cents.
+
 ## Providers
 
 Built in: `openrouter`, `openai`, `deepseek`, `dashscope` (Qwen), `zai` (GLM), `moonshot` (Kimi), `yandex` (YandexGPT). Each is an OpenAI-compatible base URL plus the name of the environment variable holding the key. Anything else - a local vLLM, a GigaChat proxy, a corporate gateway - is two lines under `providers:`.

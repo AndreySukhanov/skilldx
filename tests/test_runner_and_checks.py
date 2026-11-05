@@ -138,3 +138,21 @@ def test_routing_expectations_are_validated():
         Expect(loads=["*"])
     with pytest.raises(ValueError, match="both required and forbidden"):
         Expect(loads=["a"], not_loads=["a"])
+
+
+def test_routing_only_records_first_turn_loads_and_stops():
+    both = load("commit-message")
+    both["choices"][0]["message"]["tool_calls"].append(
+        {"id": "call_2", "type": "function", "function": {"name": "load_skill", "arguments": '{"name": "code-review"}'}}
+    )
+    client = FakeClient.script(both)
+    result = ApiRunner(client, "m", routing_only=True).run("hi", [SKILL, OTHER])
+
+    assert result.error is None
+    assert result.loaded_skills == ["commit-message", "code-review"]
+    assert result.turns == 1 and len(client.requests) == 1  # no skill body sent, no second call
+
+
+def test_routing_only_text_answer_means_nothing_loaded():
+    result = ApiRunner(FakeClient.script(text("just an answer")), "m", routing_only=True).run("hi", [SKILL])
+    assert result.loaded_skills == [] and result.output == "just an answer"
