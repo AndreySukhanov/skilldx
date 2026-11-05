@@ -357,7 +357,7 @@ Licensing contact: [avsukhanov21@gmail.com](mailto:avsukhanov21@gmail.com)
 
 <div align="center">
 
-**Built with 🐍 Python + 📐 Pydantic + 📊 Wilson intervals**
+**Built with Python + Pydantic + Wilson intervals**
 
 [GitHub](https://github.com/AndreySukhanov) · [LinkedIn](https://www.linkedin.com/in/andrei-sukhanov-2605821b9) · [Email](mailto:avsukhanov21@gmail.com)
 
