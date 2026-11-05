@@ -176,7 +176,7 @@ checks: triggered? loads / not_loads? contains / not_contains / regex / json_sch
 | 🚦 | **CI gate** | `--fail-under 0.9` exits 1 when any model's pass rate is lower |
 | 🔌 | **Providers** | `openrouter`, `openai`, `deepseek`, `dashscope`, `zai`, `moonshot`, `yandex` built in; anything OpenAI-compatible in two lines |
 | 📄 | **Reports** | Markdown + JSON: summary per model, routing tables, failures with the model's output |
-| 🐳 | **Docker** | `Dockerfile` included — run a probe without touching your Python environment |
+| 🐳 | **Docker** | Ready image `ghcr.io/andreysukhanov/skillprobe` (amd64, arm64) — run a probe in CI or locally without a Python setup |
 
 ---
 
@@ -193,6 +193,13 @@ export OPENROUTER_API_KEY=...      # or put it in a .env next to probe.yaml
 
 # 3) Run the bundled example on one model
 skillprobe run examples/commit-message/probe.yaml --repeats 1 --models qwen3.8-flash
+```
+
+No Python at hand? The same run from the ready image (amd64 and arm64), with your probe folder mounted as `/work`:
+
+```bash
+docker run --rm -v "$PWD:/work" -e OPENROUTER_API_KEY ghcr.io/andreysukhanov/skillprobe \
+  run examples/commit-message/probe.yaml --repeats 1 --models qwen3.8-flash
 ```
 
 Useful flags:
