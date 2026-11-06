@@ -1,5 +1,5 @@
-name: skillprobe
-description: Eval agent skills (SKILL.md) in CI - does the right skill load, does the model follow it - and fail the build below a pass rate.
+name: skillprobe evals
+description: Eval agent skills (SKILL.md) in CI: does the right skill load, does the model follow it. Fails the build below a pass rate.
 author: Andrey Sukhanov
 branding:
   icon: check-circle

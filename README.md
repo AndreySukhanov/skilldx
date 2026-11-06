@@ -17,7 +17,7 @@
 [![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-any%20OpenAI--compatible%20API-6566F1)](https://openrouter.ai/)
 [![PyPI](https://img.shields.io/pypi/v/skilldx?label=PyPI%20skilldx&color=3775A9&logo=pypi&logoColor=white)](https://pypi.org/project/skilldx/)
-[![Release](https://img.shields.io/badge/release-v0.3.0-orange)](https://github.com/AndreySukhanov/skillprobe/releases)
+[![Release](https://img.shields.io/badge/release-v0.3.1-orange)](https://github.com/AndreySukhanov/skillprobe/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 [![License](https://img.shields.io/badge/license-Source--Available-blue)](LICENSE)
 
@@ -326,7 +326,7 @@ Yes. `--fail-under 0.9` exits 1 when any model's pass rate drops below the thres
 In GitHub Actions, the same gate in one step (the key from your repository secrets; the report lands in the job summary):
 
 ```yaml
-- uses: AndreySukhanov/skillprobe@v0.3.0
+- uses: AndreySukhanov/skillprobe@v0.3.1
   env:
     OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
   with:
