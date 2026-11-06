@@ -2,11 +2,11 @@ from pathlib import Path
 
 from fakes import FakeClient, load, text
 
-from skillprobe.cache import Cache
-from skillprobe.cases import Expect
-from skillprobe.checks import run_checks
-from skillprobe.runner import ApiRunner, RunResult
-from skillprobe.skills import Skill
+from skilldx.cache import Cache
+from skilldx.cases import Expect
+from skilldx.checks import run_checks
+from skilldx.runner import ApiRunner, RunResult
+from skilldx.skills import Skill
 
 SKILL = Skill("commit-message", "Write commit messages.", "Always add a Why: line.", Path("SKILL.md"))
 OTHER = Skill("code-review", "Review diffs.", "Find bugs.", Path("SKILL.md"))

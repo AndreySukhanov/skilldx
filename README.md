@@ -1,23 +1,23 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="skillprobe — eval harness for agent skills" width="100%"/>
+<img src="assets/banner.png" alt="skilldx — eval harness for agent skills" width="100%"/>
 
-# 🔬 skillprobe
+# 🔬 skilldx
 
 ### The eval harness that tells you whether the right SKILL.md loads — and whether the model actually follows it.
 
-**skillprobe is an eval harness for agent skills** — the `SKILL.md` folders of Claude Code and the Agent Skills format: a Python CLI that tests whether a skill triggers on the right requests, which skill wins when many compete for the same request, and whether the model follows the skill once it loads. LLM evaluation built for skills: a labeled golden set, repeated trials, 95% confidence intervals and a CI gate, on any model behind an OpenAI-compatible API.
+**skilldx is an eval harness for agent skills** — the `SKILL.md` folders of Claude Code and the Agent Skills format: a Python CLI that tests whether a skill triggers on the right requests, which skill wins when many compete for the same request, and whether the model follows the skill once it loads. LLM evaluation built for skills: a labeled golden set, repeated trials, 95% confidence intervals and a CI gate, on any model behind an OpenAI-compatible API.
 
-**Not "run it twice and eyeball the output."** skillprobe runs a labeled golden set against any model, many times over, and turns agent-skill behavior into numbers you can put in a pull request: trigger precision and recall, pass rates with 95% confidence intervals, flaky cases, routing collisions between skills, cost per trial.
+**Not "run it twice and eyeball the output."** skilldx runs a labeled golden set against any model, many times over, and turns agent-skill behavior into numbers you can put in a pull request: trigger precision and recall, pass rates with 95% confidence intervals, flaky cases, routing collisions between skills, cost per trial.
 
 **Golden set → repeated trials → confidence intervals → per-skill routing table → CI gate. Five model families. Cents per run on flash models.**
 
-[![CI](https://github.com/AndreySukhanov/skillprobe/actions/workflows/ci.yml/badge.svg)](https://github.com/AndreySukhanov/skillprobe/actions/workflows/ci.yml)
+[![CI](https://github.com/AndreySukhanov/skilldx/actions/workflows/ci.yml/badge.svg)](https://github.com/AndreySukhanov/skilldx/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-any%20OpenAI--compatible%20API-6566F1)](https://openrouter.ai/)
 [![PyPI](https://img.shields.io/pypi/v/skilldx?label=PyPI%20skilldx&color=3775A9&logo=pypi&logoColor=white)](https://pypi.org/project/skilldx/)
-[![Release](https://img.shields.io/badge/release-v0.3.1-orange)](https://github.com/AndreySukhanov/skillprobe/releases)
+[![Release](https://img.shields.io/badge/release-v0.4.0-orange)](https://github.com/AndreySukhanov/skilldx/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 [![License](https://img.shields.io/badge/license-Source--Available-blue)](LICENSE)
 
@@ -25,7 +25,7 @@
 
 </div>
 
-![skillprobe demo: 150 trials across five models, summary table, a Qwen failure from the report](docs/demo.gif)
+![skilldx demo: 150 trials across five models, summary table, a Qwen failure from the report](docs/demo.gif)
 
 <sub>Real output of the bundled example, replayed from the response cache with `--cache-only`.</sub>
 
@@ -40,13 +40,13 @@ A skill is a prompt with a trigger. Both halves fail quietly:
 
 And in a real agent a skill never runs alone. It sits in a list next to a dozen others, and **every description in that list competes for every request.**
 
-Reading a few outputs by eye catches none of this. skillprobe runs a fixed set of cases many times per model and reports numbers you can compare between versions of a skill, between neighbors in the same skill list, and between models.
+Reading a few outputs by eye catches none of this. skilldx runs a fixed set of cases many times per model and reports numbers you can compare between versions of a skill, between neighbors in the same skill list, and between models.
 
 ---
 
 ## 🔥 Why it wins
 
-| | Eyeballing a few runs | **skillprobe** |
+| | Eyeballing a few runs | **skilldx** |
 |---|---|---|
 | **Did the skill load?** | You notice when it obviously didn't | **Trigger precision / recall** per model, on positives and near-misses |
 | **Which skill won?** | Invisible | **Per-skill routing table** — loaded when required · loaded when forbidden — plus a collisions table |
@@ -179,31 +179,31 @@ checks: triggered? loads / not_loads? contains / not_contains / regex / json_sch
 | 🚦 | **CI gate** | `--fail-under 0.9` exits 1 when any model's pass rate is lower; a ready GitHub Action runs it in one step and puts the report in the job summary |
 | 🔌 | **Providers** | `openrouter`, `openai`, `deepseek`, `dashscope`, `zai`, `moonshot`, `yandex` built in; anything OpenAI-compatible in two lines |
 | 📄 | **Reports** | Markdown + JSON: summary per model, routing tables, failures with the model's output |
-| 🐳 | **Docker** | Ready image `ghcr.io/andreysukhanov/skillprobe` (amd64, arm64) — run a probe in CI or locally without a Python setup |
+| 🐳 | **Docker** | Ready image `ghcr.io/andreysukhanov/skilldx` (amd64, arm64) — run a probe in CI or locally without a Python setup |
 
 ---
 
 ## 🚀 Quick Start
 
-Installed from PyPI with `pipx install skilldx` (the PyPI name: `skillprobe` there is an unrelated project), the command is `skillprobe` (or `skilldx`). To try the bundled examples, take the repo:
+Install from PyPI with `pipx install skilldx`; the command is `skilldx`. Until v0.4.0 the project was called skillprobe, and old links redirect here. To try the bundled examples, take the repo:
 
 ```bash
 # 1) Install
-git clone https://github.com/AndreySukhanov/skillprobe.git
-cd skillprobe
+git clone https://github.com/AndreySukhanov/skilldx.git
+cd skilldx
 pip install -e .
 
 # 2) Add a key
 export OPENROUTER_API_KEY=...      # or put it in a .env next to probe.yaml
 
 # 3) Run the bundled example on one model
-skillprobe run examples/commit-message/probe.yaml --repeats 1 --models qwen3.8-flash
+skilldx run examples/commit-message/probe.yaml --repeats 1 --models qwen3.8-flash
 ```
 
 No Python at hand? The same run from the ready image (amd64 and arm64), with your probe folder mounted as `/work`:
 
 ```bash
-docker run --rm -v "$PWD:/work" -e OPENROUTER_API_KEY ghcr.io/andreysukhanov/skillprobe \
+docker run --rm -v "$PWD:/work" -e OPENROUTER_API_KEY ghcr.io/andreysukhanov/skilldx \
   run examples/commit-message/probe.yaml --repeats 1 --models qwen3.8-flash
 ```
 
@@ -217,7 +217,9 @@ Useful flags:
 | `--cache-only` | never call the API: rebuild the report from cached responses |
 | `--fail-under 0.9` | exit 1 if any model's pass rate is lower — for CI |
 
-Every response is cached on disk (`.skillprobe_cache/`), keyed by the full request and the repeat number. Editing checks and re-running costs nothing. `max_cost_usd` in the config stops a run before it overspends.
+Every response is cached on disk (`.skilldx_cache/`), keyed by the full request and the repeat number. Editing checks and re-running costs nothing. `max_cost_usd` in the config stops a run before it overspends.
+
+Coming from skillprobe (before v0.4.0)? Call `skilldx` instead of `skillprobe` (`python -m skilldx`, `from skilldx import ...`), and rename `.skillprobe_cache/` next to your `probe.yaml` to `.skilldx_cache/` — or set `cache_dir: .skillprobe_cache` — so cached responses keep hitting.
 
 ---
 
@@ -300,7 +302,7 @@ The example runs use OpenRouter only; the direct vendor presets follow each vend
 ## ❓ FAQ
 
 ### How do I test whether my Claude skill triggers?
-Point `probe.yaml` at your skill folder and its neighbors, write `cases.yaml` with requests that must load the skill and near-misses that must not, and run `skillprobe run probe.yaml`. The report gives trigger precision and recall per model, and every failure with the model's output. See [Writing a Probe](#-writing-a-probe).
+Point `probe.yaml` at your skill folder and its neighbors, write `cases.yaml` with requests that must load the skill and near-misses that must not, and run `skilldx run probe.yaml`. The report gives trigger precision and recall per model, and every failure with the model's output. See [Writing a Probe](#-writing-a-probe).
 
 ### What is a routing collision between skills?
 Two skills loading for the same request, or the wrong one winning it. Label each case with `loads` / `not_loads` and the report adds a per-skill routing table — loaded when required, loaded when forbidden — plus a collisions table. On 28 public skills, "Add a function that validates IBANs" went to `brainstorming` in 12 of 12 trials instead of `test-driven-development`: see [Routing across 28 public skills](#-routing-across-28-public-skills).
@@ -321,12 +323,10 @@ Because one run lies. In the bundled example GLM and DeepSeek passed and failed 
 Run with `--baseline`: the same cases with no skills offered. In the bundled example every model scores 15/30 without the skill and up to 30/30 with it — the gap is the skill's measured effect.
 
 ### Can I run it in CI?
-Yes. `--fail-under 0.9` exits 1 when any model's pass rate drops below the threshold, so a new skill that steals traffic from an old one fails the build. A ready GitHub Action does it in one step:
-
-In GitHub Actions, the same gate in one step (the key from your repository secrets; the report lands in the job summary):
+Yes. `--fail-under 0.9` exits 1 when any model's pass rate drops below the threshold, so a new skill that steals traffic from an old one fails the build. A ready GitHub Action does it in one step (the key from your repository secrets; the report lands in the job summary):
 
 ```yaml
-- uses: AndreySukhanov/skillprobe@v0.3.1
+- uses: AndreySukhanov/skilldx@v0.4.0
   env:
     OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
   with:
@@ -335,9 +335,9 @@ In GitHub Actions, the same gate in one step (the key from your repository secre
     args: --repeats 3
 ```
 
-A ready Docker image (`ghcr.io/andreysukhanov/skillprobe`) works in any other CI.
+A ready Docker image (`ghcr.io/andreysukhanov/skilldx`) works in any other CI.
 
-**A skill is a routing rule plus a prompt — skillprobe measures both.**
+**A skill is a routing rule plus a prompt — skilldx measures both.**
 
 ---
 
@@ -348,10 +348,10 @@ A ready Docker image (`ghcr.io/andreysukhanov/skillprobe`) works in any other CI
 - [ ] **LLM-as-judge** with rubrics, and pairwise comparison of two skill versions
 - [ ] **Judge calibration** against human labels — a judge that disagrees with people is flagged, not trusted
 - [ ] **Judge panels** from different model families, with disagreements reported instead of averaged
-- [ ] **`skillprobe compare`** — what broke between skill v1 and v2, as a GitHub PR comment
+- [ ] **`skilldx compare`** — what broke between skill v1 and v2, as a GitHub PR comment
 - [ ] **Adversarial pack** — prompt injection through attached files, language switching
 
-Vote with 👍 on [issues](https://github.com/AndreySukhanov/skillprobe/issues), or open a new one.
+Vote with 👍 on [issues](https://github.com/AndreySukhanov/skilldx/issues), or open a new one.
 
 ---
 

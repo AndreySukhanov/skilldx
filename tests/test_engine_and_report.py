@@ -4,10 +4,10 @@ from pathlib import Path
 import pytest
 from fakes import FakeClient, load, text
 
-from skillprobe.config import ProbeConfig
-from skillprobe.engine import ProbeError, run_probe
-from skillprobe.report import render_markdown, to_json
-from skillprobe.stats import wilson_interval
+from skilldx.config import ProbeConfig
+from skilldx.engine import ProbeError, run_probe
+from skilldx.report import render_markdown, to_json
+from skilldx.stats import wilson_interval
 
 EXAMPLE = Path(__file__).parents[1] / "examples" / "commit-message"
 

@@ -1,4 +1,4 @@
-# skillprobe report
+# skilldx report
 
 Target skill: `commit-message` - 10 cases, 3 repeat(s) per case, 300 trials. Started 2026-09-13T14:18:41+00:00, finished 2026-09-13T14:18:41+00:00.
 

@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "skilldx"  # `skillprobe` on PyPI is an unrelated project; the command stays skillprobe
-version = "0.3.1"
+name = "skilldx"
+version = "0.4.0"
 description = "Eval harness for agent skills (SKILL.md): does the skill trigger when it should, and does the agent follow it - across OpenAI, Qwen, DeepSeek, GLM, Kimi and any OpenAI-compatible model."
 readme = "README.md"
 license = "LicenseRef-Source-Available"
@@ -23,20 +23,19 @@ dependencies = [
 dev = ["pytest>=8.0"]
 
 [project.urls]
-Homepage = "https://github.com/AndreySukhanov/skillprobe"
-Source = "https://github.com/AndreySukhanov/skillprobe"
-Issues = "https://github.com/AndreySukhanov/skillprobe/issues"
+Homepage = "https://github.com/AndreySukhanov/skilldx"
+Source = "https://github.com/AndreySukhanov/skilldx"
+Issues = "https://github.com/AndreySukhanov/skilldx/issues"
 
 [project.scripts]
-skillprobe = "skillprobe.cli:main"
-skilldx = "skillprobe.cli:main"
+skilldx = "skilldx.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["skillprobe"]
+packages = ["skilldx"]
 
 # the source archive carries the code and the tests, not the examples and their response cache
 [tool.hatch.build.targets.sdist]
-include = ["skillprobe", "tests", "examples/commit-message", "README.md", "LICENSE", "pyproject.toml"]
+include = ["skilldx", "tests", "examples/commit-message", "README.md", "LICENSE", "pyproject.toml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,4 +1,4 @@
-# Contributing to skillprobe
+# Contributing to skilldx
 
 Thanks for your interest! Contributions are welcome. The most valuable additions are small and self-contained.
 
@@ -12,10 +12,10 @@ Probes live in `examples/`. A routing probe is a folder with the skills (frontma
 - Commit the report and `results.json`, not the response cache.
 
 ### 2. A provider preset
-Providers are OpenAI-compatible base URLs plus the name of the environment variable holding the key (`skillprobe/config.py`). A new preset is a few lines - link the vendor's documentation for its OpenAI-compatible API in the PR.
+Providers are OpenAI-compatible base URLs plus the name of the environment variable holding the key (`skilldx/config.py`). A new preset is a few lines - link the vendor's documentation for its OpenAI-compatible API in the PR.
 
 ### 3. A new deterministic check
-Checks live in `skillprobe/checks.py`; the `expect` schema is in `skillprobe/cases.py`. Add the field, the check, and a test with the scripted fake client.
+Checks live in `skilldx/checks.py`; the `expect` schema is in `skilldx/cases.py`. Add the field, the check, and a test with the scripted fake client.
 
 ## Development setup
 

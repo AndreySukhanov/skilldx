@@ -2,9 +2,9 @@ FROM python:3.13-slim
 
 WORKDIR /app
 COPY pyproject.toml README.md LICENSE ./
-COPY skillprobe ./skillprobe
+COPY skilldx ./skilldx
 RUN pip install --no-cache-dir .
 
 WORKDIR /work
-ENTRYPOINT ["skillprobe"]
+ENTRYPOINT ["skilldx"]
 CMD ["--help"]

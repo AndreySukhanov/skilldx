@@ -61,7 +61,7 @@ class ProbeConfig(BaseModel):
         "sent, so a routing probe over many skills stays cheap.",
     )
     max_cost_usd: float | None = None
-    cache_dir: str | None = ".skillprobe_cache"
+    cache_dir: str | None = ".skilldx_cache"
 
     base_dir: Path = Field(default=Path("."), exclude=True)
 

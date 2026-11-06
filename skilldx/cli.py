@@ -1,4 +1,4 @@
-"""Command line: `skillprobe run probe.yaml`."""
+"""Command line: `skilldx run probe.yaml`."""
 
 from __future__ import annotations
 
@@ -67,8 +67,8 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="skillprobe", description="Eval harness for agent skills.")
-    parser.add_argument("--version", action="version", version=f"skillprobe {__version__}")
+    parser = argparse.ArgumentParser(prog="skilldx", description="Eval harness for agent skills.")
+    parser.add_argument("--version", action="version", version=f"skilldx {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
     run = sub.add_parser("run", help="Run a probe and write report.md + results.json.")

@@ -1,8 +1,8 @@
 name: pypi
 
-# Publishes skillprobe to PyPI as `skilldx` on a GitHub release, through trusted publishing: no token in the repo.
-# (`skillprobe` on PyPI is an unrelated project.) One-time setup on pypi.org by the owner: Publishing -> add a pending
-# publisher with project skilldx, owner AndreySukhanov, repository skillprobe, workflow pypi.yml, environment pypi.
+# Publishes skilldx to PyPI on a GitHub release, through trusted publishing: no token in the repo.
+# One-time setup on pypi.org by the owner: project skilldx -> Publishing -> a GitHub publisher with
+# owner AndreySukhanov, repository skilldx, workflow pypi.yml, environment pypi.
 
 on:
   release:

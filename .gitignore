@@ -3,8 +3,9 @@ __pycache__/
 .pytest_cache/
 .venv/
 .env
+.skilldx_cache/
 .skillprobe_cache/
 # the routing probes' responses stay in the repo: reports rebuild for free with --cache-only,
 # and the GitHub Action's self-test runs on them with no API key
-!examples/public-skills/*/.skillprobe_cache/
+!examples/public-skills/*/.skilldx_cache/
 reports/

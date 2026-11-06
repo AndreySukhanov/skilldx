@@ -102,7 +102,7 @@ def render_markdown(run: ProbeRun, *, output_chars: int = 240) -> str:
     offered = len(run.variants[0].skills) if run.variants else 0
     subject = f"Routing probe over {offered} skills" if run.is_routing else f"Target skill: `{run.target}`"
     lines = [
-        "# skillprobe report",
+        "# skilldx report",
         "",
         f"{subject} - {len(run.cases)} cases, {run.repeats} repeat(s) per case, "
         f"{total_trials} trials. Started {run.started_at}, finished {run.finished_at}.",

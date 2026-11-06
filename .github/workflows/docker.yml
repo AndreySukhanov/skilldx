@@ -1,7 +1,7 @@
 name: docker
 
 # A ready image: run a probe with no Python setup, in CI or locally, on amd64 and arm64.
-# A release tag v* publishes ghcr.io/andreysukhanov/skillprobe:<version>, :<major>.<minor> and :latest;
+# A release tag v* publishes ghcr.io/andreysukhanov/skilldx:<version>, :<major>.<minor> and :latest;
 # a manual run on main publishes :latest.
 
 on:
@@ -28,7 +28,7 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/andreysukhanov/skillprobe
+          images: ghcr.io/andreysukhanov/skilldx
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}

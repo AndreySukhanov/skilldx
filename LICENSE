@@ -3,7 +3,7 @@ Source-Available License
 
 Copyright (c) 2026 Andrey Sukhanov
 
-The source code of skillprobe (the "Software") is publicly available.
+The source code of skilldx (the "Software") is publicly available.
 It is free to read, run and learn from for personal, educational, research
 and other non-commercial purposes. Commercial or derivative use requires
 written permission. All other rights reserved.
@@ -29,7 +29,7 @@ You MAY NOT, without prior written permission from the copyright holder:
     changes proposed back to this repository.
   - Use this code, in whole or in part, as training data for machine
     learning models or AI systems.
-  - Use the name "skillprobe" or the names of its authors to
+  - Use the name "skilldx" or the names of its authors to
     promote derivative products.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from skillprobe.cases import load_cases
-from skillprobe.skills import SkillError, load_skill
+from skilldx.cases import load_cases
+from skilldx.skills import SkillError, load_skill
 
 EXAMPLE = Path(__file__).parents[1] / "examples" / "commit-message"
 

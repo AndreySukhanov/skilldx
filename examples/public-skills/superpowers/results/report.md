@@ -1,4 +1,4 @@
-# skillprobe report
+# skilldx report
 
 Routing probe over 14 skills - 21 cases, 3 repeat(s) per case, 252 trials. Started 2026-11-05T14:09:42+00:00, finished 2026-11-05T14:14:14+00:00.
 
