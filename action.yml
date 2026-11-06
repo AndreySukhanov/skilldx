@@ -1,0 +1,65 @@
+name: skillprobe
+description: Eval agent skills (SKILL.md) in CI - does the right skill load, does the model follow it - and fail the build below a pass rate.
+author: Andrey Sukhanov
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  probe:
+    description: Path to probe.yaml
+    required: true
+  fail-under:
+    description: Fail the step when any model's pass rate is below this value (0-1). Empty - the rate never fails the step.
+    required: false
+    default: ""
+  args:
+    description: More arguments for `skillprobe run`, space-separated, e.g. "--repeats 1 --models qwen3.8-flash" or "--cache-only"
+    required: false
+    default: ""
+  python-version:
+    description: Python version for the run
+    required: false
+    default: "3.12"
+
+outputs:
+  report:
+    description: Path to the Markdown report (also added to the job summary)
+    value: ${{ steps.run.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install skillprobe
+      shell: bash
+      run: python -m pip install --quiet --disable-pip-version-check "$GITHUB_ACTION_PATH"
+    - id: run
+      name: Run the probe
+      shell: python
+      # Inputs reach the script through env, never pasted into it. Python, not bash: `args` is split with shlex
+      # (quotes and several lines work), and it runs the same on Linux, macOS and Windows runners.
+      env:
+        PROBE: ${{ inputs.probe }}
+        FAIL_UNDER: ${{ inputs.fail-under }}
+        ARGS: ${{ inputs.args }}
+      run: |
+        import os, pathlib, shlex, subprocess, sys, tempfile
+
+        out = pathlib.Path(tempfile.mkdtemp(prefix="skillprobe-report-", dir=os.environ["RUNNER_TEMP"]))
+        # the interpreter skillprobe was just installed into, so nothing depends on PATH
+        argv = [sys.executable, "-m", "skillprobe", "run", os.environ["PROBE"], *shlex.split(os.environ.get("ARGS", ""))]
+        # the action's own flags go last: argparse keeps the last value, so args cannot move the report or the gate
+        argv += ["--out", str(out), "--quiet"]
+        if os.environ.get("FAIL_UNDER", "").strip():
+            argv += ["--fail-under", os.environ["FAIL_UNDER"].strip()]
+        code = subprocess.run(argv).returncode
+        report = out / "report.md"
+        if report.is_file():
+            with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+                f.write(f"report={report}\n")
+            with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+                f.write(report.read_text(encoding="utf-8"))
+        sys.exit(code)

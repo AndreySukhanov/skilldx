@@ -4,4 +4,7 @@ __pycache__/
 .venv/
 .env
 .skillprobe_cache/
+# the routing probes' responses stay in the repo: reports rebuild for free with --cache-only,
+# and the GitHub Action's self-test runs on them with no API key
+!examples/public-skills/*/.skillprobe_cache/
 reports/

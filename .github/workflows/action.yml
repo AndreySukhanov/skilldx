@@ -1,0 +1,29 @@
+name: action
+
+# Self-test of the GitHub Action in this repository: the routing probe on 14 Anthropic skills,
+# replayed from the response cache in the repo - no API key, no network calls to a model.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: probe
+        uses: ./
+        with:
+          probe: examples/public-skills/anthropic/probe.yaml
+          args: --cache-only --models qwen3.8-flash
+          fail-under: "0.9"
+      - name: Every trial ran from the cache
+        # a cache miss is skipped and leaves the denominator: 74/75 proves all 75 trials ran
+        env:
+          REPORT: ${{ steps.probe.outputs.report }}
+        run: test -s "$REPORT" && grep -q "| qwen3.8-flash | 74/75 " "$REPORT"

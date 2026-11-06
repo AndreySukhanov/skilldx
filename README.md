@@ -16,7 +16,8 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-any%20OpenAI--compatible%20API-6566F1)](https://openrouter.ai/)
-[![Release](https://img.shields.io/badge/release-v0.2.0-orange)](https://github.com/AndreySukhanov/skillprobe/releases)
+[![PyPI](https://img.shields.io/pypi/v/skilldx?label=PyPI%20skilldx&color=3775A9&logo=pypi&logoColor=white)](https://pypi.org/project/skilldx/)
+[![Release](https://img.shields.io/badge/release-v0.3.0-orange)](https://github.com/AndreySukhanov/skillprobe/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 [![License](https://img.shields.io/badge/license-Source--Available-blue)](LICENSE)
 
@@ -173,7 +174,7 @@ checks: triggered? loads / not_loads? contains / not_contains / regex / json_sch
 | 📉 | **Baseline** | `--baseline` runs every model with no skills offered — shows what the skill adds |
 | 💾 | **Response cache** | Keyed by the full request and the repeat number; `--cache-only` rebuilds reports offline |
 | 💸 | **Cost & latency** | Per model and per run; `max_cost_usd` is a hard budget cap |
-| 🚦 | **CI gate** | `--fail-under 0.9` exits 1 when any model's pass rate is lower |
+| 🚦 | **CI gate** | `--fail-under 0.9` exits 1 when any model's pass rate is lower; a ready GitHub Action runs it in one step and puts the report in the job summary |
 | 🔌 | **Providers** | `openrouter`, `openai`, `deepseek`, `dashscope`, `zai`, `moonshot`, `yandex` built in; anything OpenAI-compatible in two lines |
 | 📄 | **Reports** | Markdown + JSON: summary per model, routing tables, failures with the model's output |
 | 🐳 | **Docker** | Ready image `ghcr.io/andreysukhanov/skillprobe` (amd64, arm64) — run a probe in CI or locally without a Python setup |
@@ -181,6 +182,8 @@ checks: triggered? loads / not_loads? contains / not_contains / regex / json_sch
 ---
 
 ## 🚀 Quick Start
+
+Installed from PyPI with `pipx install skilldx` (the PyPI name: `skillprobe` there is an unrelated project), the command is `skillprobe` (or `skilldx`). To try the bundled examples, take the repo:
 
 ```bash
 # 1) Install
@@ -316,7 +319,21 @@ Because one run lies. In the bundled example GLM and DeepSeek passed and failed 
 Run with `--baseline`: the same cases with no skills offered. In the bundled example every model scores 15/30 without the skill and up to 30/30 with it — the gap is the skill's measured effect.
 
 ### Can I run it in CI?
-Yes. `--fail-under 0.9` exits 1 when any model's pass rate drops below the threshold, so a new skill that steals traffic from an old one fails the build. A `Dockerfile` is included.
+Yes. `--fail-under 0.9` exits 1 when any model's pass rate drops below the threshold, so a new skill that steals traffic from an old one fails the build. A ready GitHub Action does it in one step:
+
+In GitHub Actions, the same gate in one step (the key from your repository secrets; the report lands in the job summary):
+
+```yaml
+- uses: AndreySukhanov/skillprobe@v0.3.0
+  env:
+    OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  with:
+    probe: evals/probe.yaml
+    fail-under: "0.9"
+    args: --repeats 3
+```
+
+A ready Docker image (`ghcr.io/andreysukhanov/skillprobe`) works in any other CI.
 
 **A skill is a routing rule plus a prompt — skillprobe measures both.**
 

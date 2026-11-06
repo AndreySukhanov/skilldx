@@ -11,7 +11,9 @@ Key facts:
 - Flags: `--baseline` (no skills offered), `--repeats`, `--models`, `--cases`, `--cache-only` (rebuild reports from cached responses), `--fail-under` (CI gate); `max_cost_usd` budget cap.
 - Providers built in: openrouter, openai, deepseek, dashscope (Qwen), zai (GLM), moonshot (Kimi), yandex (YandexGPT); any other OpenAI-compatible API in two lines.
 - Bundled results: a commit-message skill on five models (OpenAI, Qwen, DeepSeek, GLM, Kimi), and routing golden sets on 28 public skills - 14 from anthropics/skills, 14 from obra/superpowers, 46 labeled cases.
-- Version 0.2.0; 35 offline tests; Source-Available license; third-party skills keep their own licenses.
+- Install: `pipx install skilldx` (PyPI name; `skillprobe` on PyPI is an unrelated project), command `skillprobe`. GitHub Action: `uses: AndreySukhanov/skillprobe@v0.3.0` with `probe`, `fail-under`, `args`; the report goes to the job summary. Docker: `ghcr.io/andreysukhanov/skillprobe`.
+- The response cache of both routing probes is in the repo: `--cache-only` rebuilds their reports with no API key.
+- Version 0.3.0; 35 offline tests; Source-Available license; third-party skills keep their own licenses.
 
 ## Docs
 
