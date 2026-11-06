@@ -25,6 +25,8 @@ Key facts:
 
 ## Optional
 
+- [Dataset on Hugging Face](https://huggingface.co/datasets/alex7604/agent-skill-routing): the routing golden set - 46 cases, 28 skills, 627 trials on five models
+
 - [Routing report, anthropics/skills](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/public-skills/anthropic/results/report.md): 14 skills, 25 cases, five models
 - [Routing report, obra/superpowers](https://github.com/AndreySukhanov/skillprobe/blob/main/examples/public-skills/superpowers/results/report.md): 14 skills, 21 cases, four models
 - [Contributing](https://github.com/AndreySukhanov/skillprobe/blob/main/CONTRIBUTING.md): golden sets, provider presets, checks

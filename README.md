@@ -93,6 +93,8 @@ Two probes, real skills, unchanged descriptions:
 - [`examples/public-skills/anthropic`](examples/public-skills/anthropic) — 14 skills from [anthropics/skills](https://github.com/anthropics/skills), 25 labeled cases;
 - [`examples/public-skills/superpowers`](examples/public-skills/superpowers) — 14 skills from [obra/superpowers](https://github.com/obra/superpowers), 21 labeled cases.
 
+The golden set and all 627 trials are also a dataset on Hugging Face: [agent-skill-routing](https://huggingface.co/datasets/alex7604/agent-skill-routing) — `load_dataset` it, no repo needed.
+
 Each case says which skill must load and which must not ([how the golden sets are labeled](examples/public-skills/LABELS.md)). `routing_only` stops every trial after the first turn, 3 repeats per case, all models through OpenRouter.
 
 | probe | gpt-5.6-luna | qwen3.8-flash | deepseek-v4.1-flash | glm-5.3-flash | kimi-k3 |
